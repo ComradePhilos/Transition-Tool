@@ -21,6 +21,7 @@ type
     Label3: TLabel;
     Memo1: TMemo;
     ProgressBar1: TProgressBar;
+    procedure FormCreate(Sender: TObject);
   private
     { private declarations }
   public
@@ -38,6 +39,14 @@ const
 implementation
 
 {$R *.lfm}
+
+{ TForm1 }
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  self.Constraints.MinHeight := self.Height;
+  self.Constraints.MinWidth := self.Width;
+end;
 
 end.
 
