@@ -14,14 +14,20 @@ type
 
   TMainForm = class(TForm)
     BtnStart: TBitBtn;
+    CheckBox1: TCheckBox;
+    DateEdit1: TDateEdit;
+    DateEdit2: TDateEdit;
     EdtSource: TDirectoryEdit;
     EdtDestination: TDirectoryEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
     MemoPrefix: TMemo;
     ProgressBar: TProgressBar;
     procedure BtnStartClick(Sender: TObject);
+    procedure CheckBox1Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
@@ -29,6 +35,7 @@ type
     FPrefixes: TStringList;
     procedure LoadIni;
     procedure SaveIni;
+    procedure Start(CheckDates: Boolean);
   public
     { public declarations }
   end;
@@ -40,6 +47,8 @@ const
   ProgrammVersion = 1.1;
   ProgrammTitle = 'Transition Tool';
   ProgrammAuthor = 'Philip Märksch';
+
+  txtNoPrefix = 'Kann nicht starten: Keine Präfixe angegeben!';
 
 implementation
 
@@ -65,7 +74,22 @@ end;
 
 procedure TMainForm.BtnStartClick(Sender: TObject);
 begin
+  FPrefixes.Clear;
+  FPrefixes.AddStrings(MemoPrefix.Lines);
+  if (FPrefixes.Count > 0) then
+  begin
 
+  end
+  else
+  begin
+    Application.MessageBox(txtNoPrefix, 'Achtung!', 0);
+  end;
+end;
+
+procedure TMainForm.CheckBox1Change(Sender: TObject);
+begin
+  DateEdit1.Enabled := CheckBox1.Checked;
+  DateEdit2.Enabled := CheckBox1.Checked;
 end;
 
 procedure TMainForm.LoadIni;
@@ -112,6 +136,11 @@ begin
   finally
     ini.Free;
   end;
+end;
+
+procedure TMainForm.Start(CheckDates: Boolean);
+begin
+
 end;
 
 end.
