@@ -33,6 +33,7 @@ type
   private
     { private declarations }
     FPrefixes: TStringList;
+    function CountFiles: Integer;
     procedure LoadIni;
     procedure SaveIni;
     procedure Start(CheckDates: Boolean);
@@ -73,12 +74,16 @@ begin
 end;
 
 procedure TMainForm.BtnStartClick(Sender: TObject);
+var
+  CheckDates: Boolean;
 begin
   FPrefixes.Clear;
   FPrefixes.AddStrings(MemoPrefix.Lines);
+
+  CheckDates := CheckBox1.Checked;
   if (FPrefixes.Count > 0) then
   begin
-
+    Start(CheckDates);
   end
   else
   begin
@@ -90,6 +95,20 @@ procedure TMainForm.CheckBox1Change(Sender: TObject);
 begin
   DateEdit1.Enabled := CheckBox1.Checked;
   DateEdit2.Enabled := CheckBox1.Checked;
+end;
+
+function TMainForm.CountFiles: Integer;
+var
+  I: Integer;
+  SearchRec: TSearchRec;
+begin
+  I := 0;
+  Result := 0;
+  FindFirst(EdtSource.Directory + '\*.*', faAnyFile, SearchRec);
+  repeat
+    Inc(I);
+  until FindNext(SearchRec) <> 0;
+  Result := I-2;
 end;
 
 procedure TMainForm.LoadIni;
@@ -139,7 +158,18 @@ begin
 end;
 
 procedure TMainForm.Start(CheckDates: Boolean);
+var
+  SearchRec: TSearchRec;
+  MainFolder: String;
+  FileCount: Integer;
 begin
+  if CheckDates then
+    MainFolder := 'Belege (' + DateEdit1.Text + ' bis ' + DateEdit2.Text + ')'
+  else
+    MainFolder := 'Belege';
+
+  FileCount := CountFiles;
+  ProgressBar.Max := FileCount;
 
 end;
 

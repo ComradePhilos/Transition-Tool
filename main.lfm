@@ -12,7 +12,7 @@ object MainForm: TMainForm
   object EdtSource: TDirectoryEdit
     Left = 8
     Height = 23
-    Top = 24
+    Top = 19
     Width = 210
     ShowHidden = False
     ButtonWidth = 23
@@ -24,7 +24,7 @@ object MainForm: TMainForm
   object EdtDestination: TDirectoryEdit
     Left = 8
     Height = 23
-    Top = 64
+    Top = 59
     Width = 210
     ShowHidden = False
     ButtonWidth = 23
@@ -36,7 +36,7 @@ object MainForm: TMainForm
   object Label1: TLabel
     Left = 8
     Height = 15
-    Top = 8
+    Top = 3
     Width = 34
     Caption = 'Quelle'
     ParentColor = False
@@ -44,7 +44,7 @@ object MainForm: TMainForm
   object Label2: TLabel
     Left = 8
     Height = 15
-    Top = 48
+    Top = 43
     Width = 19
     Caption = 'Ziel'
     ParentColor = False
