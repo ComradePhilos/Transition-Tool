@@ -24,6 +24,7 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    lblProgress: TLabel;
     MemoPrefix: TMemo;
     ProgressBar: TProgressBar;
     procedure BtnStartClick(Sender: TObject);
@@ -33,10 +34,11 @@ type
   private
     { private declarations }
     FPrefixes: TStringList;
-    function CountFiles: Integer;
+    function CountFiles: integer;
     procedure LoadIni;
     procedure SaveIni;
-    procedure Start(CheckDates: Boolean);
+    procedure Start(CheckDates: boolean);
+    procedure UpdateProgressBar(Progress, Max: integer);
   public
     { public declarations }
   end;
@@ -75,7 +77,7 @@ end;
 
 procedure TMainForm.BtnStartClick(Sender: TObject);
 var
-  CheckDates: Boolean;
+  CheckDates: boolean;
 begin
   FPrefixes.Clear;
   FPrefixes.AddStrings(MemoPrefix.Lines);
@@ -97,9 +99,9 @@ begin
   DateEdit2.Enabled := CheckBox1.Checked;
 end;
 
-function TMainForm.CountFiles: Integer;
+function TMainForm.CountFiles: integer;
 var
-  I: Integer;
+  I: integer;
   SearchRec: TSearchRec;
 begin
   I := 0;
@@ -108,14 +110,15 @@ begin
   repeat
     Inc(I);
   until FindNext(SearchRec) <> 0;
-  Result := I-2;
+  FindClose(SearchRec);
+  Result := I - 2;
 end;
 
 procedure TMainForm.LoadIni;
 var
   ini: TIniFile;
-  count: Integer; // number of prefixes mentioned in ini-file
-  I: Integer;
+  Count: integer; // number of prefixes mentioned in ini-file
+  I: integer;
 begin
   ini := TIniFile.Create('config.ini');
   try
@@ -124,10 +127,10 @@ begin
     EdtDestination.Text := ini.ReadString('Paths', 'Destination', '');
     // Prefixes
     FPrefixes.Clear;
-    count := ini.ReadInteger('Prefixes', 'Count', FPrefixes.Count);
-    for I := 0 to count - 1 do
+    Count := ini.ReadInteger('Prefixes', 'Count', FPrefixes.Count);
+    for I := 0 to Count - 1 do
     begin
-      FPrefixes.Add(ini.ReadString('Prefixes', IntToStr(I) , ''));
+      FPrefixes.Add(ini.ReadString('Prefixes', IntToStr(I), ''));
       MemoPrefix.Lines.Add(FPrefixes[I]);
     end;
   finally
@@ -138,7 +141,7 @@ end;
 procedure TMainForm.SaveIni;
 var
   ini: TIniFile;
-  I: Integer;
+  I: integer;
 begin
   ini := TIniFile.Create('config.ini');
   try
@@ -157,19 +160,38 @@ begin
   end;
 end;
 
-procedure TMainForm.Start(CheckDates: Boolean);
+procedure TMainForm.Start(CheckDates: boolean);
 var
   SearchRec: TSearchRec;
-  MainFolder: String;
-  FileCount: Integer;
+  MainFolder: string;
+  FileCount: integer;
+  FilesFinished: integer;
 begin
+  FilesFinished := 0;
   if CheckDates then
     MainFolder := 'Belege (' + DateEdit1.Text + ' bis ' + DateEdit2.Text + ')'
   else
     MainFolder := 'Belege';
 
   FileCount := CountFiles;
-  ProgressBar.Max := FileCount;
+  UpdateProgressBar(0, FileCount);
+
+  if (FileCount > 0) then
+  begin
+    FindFirst(edtSource.Directory + '\*.*', faAnyFile, SearchRec);
+    repeat
+
+      Inc(FilesFinished);
+      UpdateProgressBar(FilesFinished, FileCount);
+      Application.ProcessMessages;
+    until FindNext(SearchRec) <> 0;
+    FindClose(SearchRec);
+  end;
+
+end;
+
+procedure TMainForm.UpdateProgressBar(Progress, Max: integer);
+begin
 
 end;
 

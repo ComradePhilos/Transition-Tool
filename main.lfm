@@ -219,4 +219,13 @@ object MainForm: TMainForm
     OnChange = CheckBox1Change
     TabOrder = 7
   end
+  object lblProgress: TLabel
+    Left = 64
+    Height = 15
+    Top = 309
+    Width = 58
+    Anchors = [akLeft, akBottom]
+    Caption = 'lblProgress'
+    ParentColor = False
+  end
 end
