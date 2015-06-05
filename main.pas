@@ -35,7 +35,9 @@ type
     { private declarations }
     FPrefixes: TStringList;
     function CountFiles: integer;
+    function HasPrefix(FileName: String);
     procedure LoadIni;
+    procedure MoveFile(Directory: String);
     procedure SaveIni;
     procedure Start(CheckDates: boolean);
     procedure UpdateProgressBar(Progress, Max: integer);
@@ -187,12 +189,13 @@ begin
     until FindNext(SearchRec) <> 0;
     FindClose(SearchRec);
   end;
-
+  UpdateProgressBar(0, 0);
 end;
 
 procedure TMainForm.UpdateProgressBar(Progress, Max: integer);
 begin
-
+  ProgressBar.Position := Progress;
+  ProgressBar.Max := Max;
 end;
 
 end.
