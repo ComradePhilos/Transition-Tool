@@ -14,7 +14,7 @@ type
 
   TMainForm = class(TForm)
     BtnStart: TBitBtn;
-    CheckBox1: TCheckBox;
+    CheckBoxDate: TCheckBox;
     DateEdit1: TDateEdit;
     DateEdit2: TDateEdit;
     EdtSource: TDirectoryEdit;
@@ -28,14 +28,15 @@ type
     MemoPrefix: TMemo;
     ProgressBar: TProgressBar;
     procedure BtnStartClick(Sender: TObject);
-    procedure CheckBox1Change(Sender: TObject);
+    procedure CheckBoxDateChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
     { private declarations }
     FPrefixes: TStringList;
     function CountFiles: integer;
-    function HasPrefix(FileName: String);
+    function FileDateValid(ADate: TDateTime): Boolean;
+    function HasPrefix(FileName: String): Boolean;
     procedure LoadIni;
     procedure MoveFile(Directory: String);
     procedure SaveIni;
@@ -84,7 +85,7 @@ begin
   FPrefixes.Clear;
   FPrefixes.AddStrings(MemoPrefix.Lines);
 
-  CheckDates := CheckBox1.Checked;
+  CheckDates := CheckBoxDate.Checked;
   if (FPrefixes.Count > 0) then
   begin
     Start(CheckDates);
@@ -95,10 +96,10 @@ begin
   end;
 end;
 
-procedure TMainForm.CheckBox1Change(Sender: TObject);
+procedure TMainForm.CheckBoxDateChange(Sender: TObject);
 begin
-  DateEdit1.Enabled := CheckBox1.Checked;
-  DateEdit2.Enabled := CheckBox1.Checked;
+  DateEdit1.Enabled := CheckBoxDate.Checked;
+  DateEdit2.Enabled := CheckBoxDate.Checked;
 end;
 
 function TMainForm.CountFiles: integer;
@@ -114,6 +115,18 @@ begin
   until FindNext(SearchRec) <> 0;
   FindClose(SearchRec);
   Result := I - 2;
+end;
+
+function TMainForm.FileDateValid(ADate: TDateTime): Boolean;
+begin
+  if CheckBoxDate.Checked then
+  begin
+    Result := (ADate >= DateEdit1.Date) or (ADate <= DateEdit2.Date);
+  end
+  else
+  begin
+    Result := True;
+  end;
 end;
 
 procedure TMainForm.LoadIni;
@@ -138,6 +151,17 @@ begin
   finally
     ini.Free;
   end;
+end;
+
+function TMainForm.HasPrefix(FileName: String): Boolean;
+var
+  I: Integer;
+begin
+  Result := (FPrefixes.IndexOf(FileName) >= 0);
+end;
+
+procedure TMainForm.MoveFile(Directory: String);
+begin
 end;
 
 procedure TMainForm.SaveIni;

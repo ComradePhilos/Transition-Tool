@@ -211,12 +211,12 @@ object MainForm: TMainForm
     MaxLength = 0
     TabOrder = 6
   end
-  object CheckBox1: TCheckBox
+  object CheckBoxDate: TCheckBox
     Left = 15
     Height = 19
     Top = 96
     Width = 20
-    OnChange = CheckBox1Change
+    OnChange = CheckBoxDateChange
     TabOrder = 7
   end
   object lblProgress: TLabel
