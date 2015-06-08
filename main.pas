@@ -38,9 +38,8 @@ type
     function FileDateValid(ADate: TDateTime): Boolean;
     function HasPrefix(FileName: String): Boolean;
     procedure LoadIni;
-    procedure MoveFile(Directory: String);
     procedure SaveIni;
-    procedure Start(CheckDates: boolean);
+    procedure Start;
     procedure UpdateProgressBar(Progress, Max: integer);
   public
     { public declarations }
@@ -79,16 +78,13 @@ begin
 end;
 
 procedure TMainForm.BtnStartClick(Sender: TObject);
-var
-  CheckDates: boolean;
 begin
   FPrefixes.Clear;
   FPrefixes.AddStrings(MemoPrefix.Lines);
 
-  CheckDates := CheckBoxDate.Checked;
   if (FPrefixes.Count > 0) then
   begin
-    Start(CheckDates);
+    Start;
   end
   else
   begin
@@ -154,14 +150,8 @@ begin
 end;
 
 function TMainForm.HasPrefix(FileName: String): Boolean;
-var
-  I: Integer;
 begin
   Result := (FPrefixes.IndexOf(FileName) >= 0);
-end;
-
-procedure TMainForm.MoveFile(Directory: String);
-begin
 end;
 
 procedure TMainForm.SaveIni;
@@ -186,40 +176,59 @@ begin
   end;
 end;
 
-procedure TMainForm.Start(CheckDates: boolean);
+procedure TMainForm.Start;
 var
   SearchRec: TSearchRec;
   MainFolder: string;
+  OtherFolder: string;
   FileCount: integer;
   FilesFinished: integer;
 begin
   FilesFinished := 0;
-  if CheckDates then
-    MainFolder := 'Belege (' + DateEdit1.Text + ' bis ' + DateEdit2.Text + ')'
+  if CheckBoxDate.Checked then
+    MainFolder := '\Belege (' + DateEdit1.Text + ' bis ' + DateEdit2.Text + ')\'
   else
-    MainFolder := 'Belege';
+    MainFolder := '\Belege\';
+  if CheckBoxDate.Checked then
+    OtherFolder := '\Andere (' + DateEdit1.Text + ' bis ' + DateEdit2.Text + ')\'
+  else
+    OtherFolder := '\Andere\';
 
+  // Count Files
   FileCount := CountFiles;
   UpdateProgressBar(0, FileCount);
 
+  // Move Files
   if (FileCount > 0) then
   begin
     FindFirst(edtSource.Directory + '\*.*', faAnyFile, SearchRec);
     repeat
-
+      if FileDateValid(SearchRec.Time) then
+      begin
+        if HasPrefix(SearchRec.Name) then
+        begin
+          // move
+          CopyFile(EdtSource.Directory + '\' + SearchRec.Name, EdtDestination.Directory + MainFolder + SearchRec.Name);
+        end
+        else
+        begin
+          CopyFile(EdtSource.Directory + '\' + SearchRec.Name, EdtDestination.Directory + OtherFolder + SearchRec.Name);
+        end;
+      end;
       Inc(FilesFinished);
       UpdateProgressBar(FilesFinished, FileCount);
       Application.ProcessMessages;
     until FindNext(SearchRec) <> 0;
     FindClose(SearchRec);
   end;
-  UpdateProgressBar(0, 0);
 end;
 
 procedure TMainForm.UpdateProgressBar(Progress, Max: integer);
 begin
   ProgressBar.Position := Progress;
   ProgressBar.Max := Max;
+
+  lblProgress.Caption := IntToStr(Progress) + '/' + IntToStr(Max);
 end;
 
 end.
