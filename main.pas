@@ -35,8 +35,8 @@ type
     { private declarations }
     FPrefixes: TStringList;
     function CountFiles: integer;
-    function FileDateValid(ADate: TDateTime): Boolean;
-    function HasPrefix(FileName: String): Boolean;
+    function FileDateValid(ADate: TDateTime): boolean;
+    function HasPrefix(FileName: string): boolean;
     procedure LoadIni;
     procedure SaveIni;
     procedure Start;
@@ -110,10 +110,10 @@ begin
     Inc(I);
   until FindNext(SearchRec) <> 0;
   FindClose(SearchRec);
-  Result := I - 2;
+  Result := I-2;
 end;
 
-function TMainForm.FileDateValid(ADate: TDateTime): Boolean;
+function TMainForm.FileDateValid(ADate: TDateTime): boolean;
 begin
   if CheckBoxDate.Checked then
   begin
@@ -149,9 +149,20 @@ begin
   end;
 end;
 
-function TMainForm.HasPrefix(FileName: String): Boolean;
+function TMainForm.HasPrefix(FileName: string): boolean;
+var
+  I: integer;
 begin
-  Result := (FPrefixes.IndexOf(FileName) >= 0);
+  Result := False;
+  for I := 0 to FPrefixes.Count - 1 do
+  begin
+    //if Pos(FPrefixes[I], FileName) <> 0 then
+    if SameText(Copy(FileName, 0, Length(FPrefixes[I])), FPrefixes[I]) then
+    begin
+      Result := True;
+      CreateDir(EdtDestination.Text + '\' + FPrefixes[I]);
+    end;
+  end;
 end;
 
 procedure TMainForm.SaveIni;
@@ -189,10 +200,12 @@ begin
     MainFolder := '\Belege (' + DateEdit1.Text + ' bis ' + DateEdit2.Text + ')\'
   else
     MainFolder := '\Belege\';
+  CreateDir(EdtDestination.Text + MainFolder);
   if CheckBoxDate.Checked then
     OtherFolder := '\Andere (' + DateEdit1.Text + ' bis ' + DateEdit2.Text + ')\'
   else
     OtherFolder := '\Andere\';
+  CreateDir(EdtDestination.Text + OtherFolder);
 
   // Count Files
   FileCount := CountFiles;
@@ -201,18 +214,24 @@ begin
   // Move Files
   if (FileCount > 0) then
   begin
-    FindFirst(edtSource.Directory + '\*.*', faAnyFile, SearchRec);
+    FindFirst(edtSource.Text + '\*.*', faAnyFile, SearchRec);
+    FindNext(SearchRec);
+    FindNext(SearchRec);
+    application.MessageBox('Vorgagn gestartet!', 'Start', 0);
     repeat
       if FileDateValid(SearchRec.Time) then
       begin
         if HasPrefix(SearchRec.Name) then
         begin
           // move
-          CopyFile(EdtSource.Directory + '\' + SearchRec.Name, EdtDestination.Directory + MainFolder + SearchRec.Name);
+          application.MessageBox('Vorgagn gestartet!', 'Start', 0);
+          CopyFile(EdtSource.Text + '\' + SearchRec.Name, EdtDestination.Text +
+            MainFolder + SearchRec.Name);
         end
         else
         begin
-          CopyFile(EdtSource.Directory + '\' + SearchRec.Name, EdtDestination.Directory + OtherFolder + SearchRec.Name);
+          CopyFile(EdtSource.Text + '\' + SearchRec.Name, EdtDestination.Text +
+            OtherFolder + SearchRec.Name);
         end;
       end;
       Inc(FilesFinished);
@@ -232,4 +251,3 @@ begin
 end;
 
 end.
-
