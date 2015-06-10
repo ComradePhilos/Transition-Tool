@@ -50,7 +50,7 @@ var
   MainForm: TMainForm;
 
 const
-  ProgrammVersion = 1.1;
+  ProgrammVersion = 1.0;
   ProgrammTitle = 'Transition Tool';
   ProgrammAuthor = 'Philip Märksch';
 
