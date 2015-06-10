@@ -120,7 +120,7 @@ function TMainForm.FileDateValid(ADate: TDateTime): boolean;
 begin
   if CheckBoxDate.Checked then
   begin
-    Result := (ADate >= DateEdit1.Date) and (ADate <= DateEdit2.Date);
+    Result := (ADate >= StrToDate(DateEdit1.Text)) and (ADate <= StrToDate(DateEdit2.Text));
   end
   else
   begin
@@ -225,7 +225,7 @@ begin
 
     repeat
       // If Date is not valid, then ignore file completely
-      if FileDateValid(SearchRec.Time) then
+      if FileDateValid(FileDateToDateTime(SearchRec.Time)) then
       begin
         pref := HasPrefix(SearchRec.Name);
         if (pref <> '') then
