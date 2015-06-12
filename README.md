@@ -7,7 +7,7 @@ Programme GUI right now is only in German, because the programme is actually mad
 
 ## installation
 #### Linux
-´´´bash
+```bash
 git clone https://github.com/comradephilos/transition-tool.git
 cd transition-tool
 lazbuild TransitionTool.lpi
