@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, EditBtn,
-  StdCtrls, Buttons, ComCtrls, INIFiles;
+  StdCtrls, Buttons, ComCtrls, Menus, INIFiles, Infoform;
 
 type
 
@@ -24,17 +24,25 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    lblProgress: TLabel;
+    MainMenu1: TMainMenu;
     MemoPrefix: TMemo;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
     ProgressBar: TProgressBar;
     procedure BtnStartClick(Sender: TObject);
     procedure CheckBoxDateChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
   private
     { private declarations }
     FPrefixes: TStringList;
     Mainfolder: string;
+    InfoForm1: TForm1;
+
     function CountFiles: integer;
     function FileDateValid(ADate: TDateTime): boolean;
     function HasPrefix(FileName: string): String;
@@ -42,6 +50,7 @@ type
     procedure SaveIni;
     procedure Start;
     procedure UpdateProgressBar(Progress, Max: integer);
+    procedure TrimAndAdd(Strings: TStrings);
   public
     { public declarations }
   end;
@@ -50,7 +59,7 @@ var
   MainForm: TMainForm;
 
 const
-  ProgrammVersion = 1.0;
+  ProgrammVersion = '1.1';
   ProgrammTitle = 'Transition Tool';
   ProgrammAuthor = 'Philip Märksch';
 
@@ -64,8 +73,20 @@ implementation
 
 { TMainForm }
 
+procedure TMainForm.TrimAndAdd(Strings: TStrings);
+var
+  I: Integer;
+begin
+  FPrefixes.Clear;
+  for I := 0 to Strings.Count -1 do
+    FPrefixes.Add(Trim(Strings[I]));
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  InfoForm1 := TForm1.Create(self);
+  InfoForm1.SetInfo(ProgrammVersion, ProgrammAuthor);
+  Self.Caption := ProgrammTitle + ' ' + ProgrammVersion;
   FPrefixes := TStringList.Create;
   self.Constraints.MinHeight := self.Height;
   self.Constraints.MinWidth := self.Width;
@@ -80,10 +101,19 @@ begin
   FPrefixes.Free;
 end;
 
+procedure TMainForm.MenuItem2Click(Sender: TObject);
+begin
+  Application.Terminate;
+end;
+
+procedure TMainForm.MenuItem4Click(Sender: TObject);
+begin
+  infoform1.Show;
+end;
+
 procedure TMainForm.BtnStartClick(Sender: TObject);
 begin
-  FPrefixes.Clear;
-  FPrefixes.AddStrings(MemoPrefix.Lines);
+  TrimAndAdd(MemoPrefix.Lines);
 
   if (FPrefixes.Count > 0) then
   begin
@@ -144,7 +174,7 @@ begin
     Count := ini.ReadInteger('Prefixes', 'Count', FPrefixes.Count);
     for I := 0 to Count - 1 do
     begin
-      FPrefixes.Add(ini.ReadString('Prefixes', IntToStr(I), ''));
+      FPrefixes.Add(Trim(ini.ReadString('Prefixes', IntToStr(I), '')));
       MemoPrefix.Lines.Add(FPrefixes[I]);
     end;
   finally
@@ -256,7 +286,7 @@ procedure TMainForm.UpdateProgressBar(Progress, Max: integer);
 begin
   ProgressBar.Position := Progress;
   ProgressBar.Max := Max;
-  lblProgress.Caption := IntToStr(Progress) + '/' + IntToStr(Max);
+  //lblProgress.Caption := IntToStr(Progress) + '/' + IntToStr(Max);
   Application.ProcessMessages;
 end;
 

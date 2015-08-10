@@ -1,0 +1,35 @@
+object Form1: TForm1
+  Left = 672
+  Height = 105
+  Top = 203
+  Width = 218
+  Caption = 'Info'
+  ClientHeight = 105
+  ClientWidth = 218
+  Position = poMainFormCenter
+  LCLVersion = '1.4.2.0'
+  object Label1: TLabel
+    Left = 16
+    Height = 15
+    Top = 8
+    Width = 80
+    Caption = 'Transition Tool'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 24
+    Height = 15
+    Top = 36
+    Width = 42
+    Caption = 'Version:'
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 24
+    Height = 15
+    Top = 64
+    Width = 40
+    Caption = 'Author:'
+    ParentColor = False
+  end
+end
